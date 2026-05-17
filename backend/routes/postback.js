@@ -283,11 +283,12 @@ router.get('/:network', async (req, res) => {
  */
 async function logTransaction(networkId, networkName, userId, transactionId, payout, creditedAmount, adminProfit, ipAddress, userAgent, rawData, status, errorMessage) {
     try {
+        const numericUserId = parseInt(userId) || 0;
         await pool.query(
             `INSERT INTO offerwall_transactions 
             (user_id, network_id, network_name, transaction_id, payout, credited_amount, admin_profit, ip_address, user_agent, raw_data, status, error_message)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [userId || 0, networkId, networkName, transactionId || 'unknown', payout, creditedAmount, adminProfit, ipAddress, userAgent, JSON.stringify(rawData), status, errorMessage]
+            [numericUserId, networkId, networkName, transactionId || 'unknown', payout, creditedAmount, adminProfit, ipAddress, userAgent, JSON.stringify(rawData), status, errorMessage]
         );
     } catch (err) {
         console.error('[POSTBACK] Failed to log transaction:', err);
