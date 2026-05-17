@@ -138,10 +138,10 @@ router.get('/:network', async (req, res) => {
             return res.status(403).send('0');
         }
 
-        // 5. IP Whitelist check (if configured)
-        if (networkConfig.ip_whitelist) {
-            const allowedIPs = networkConfig.ip_whitelist.split(',').map(ip => ip.trim());
-            if (!allowedIPs.includes(ipAddress)) {
+        // 5. IP Whitelist check (if configured and not empty)
+        if (networkConfig.ip_whitelist && networkConfig.ip_whitelist.trim() !== '') {
+            const allowedIPs = networkConfig.ip_whitelist.split(',').map(ip => ip.trim()).filter(Boolean);
+            if (allowedIPs.length > 0 && !allowedIPs.includes(ipAddress)) {
                 await logTransaction(networkConfig.id, networkLower, userId, transactionId, amount, 0, 0, ipAddress, userAgent, req.query, 'rejected', `IP not whitelisted: ${ipAddress}`);
                 console.log(`[POSTBACK] IP not whitelisted: ${ipAddress}`);
                 return res.status(403).send('0');
