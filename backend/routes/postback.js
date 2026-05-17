@@ -327,7 +327,17 @@ router.get('/test/:network', async (req, res) => {
             signature: paramConfig.signatureParam
         } : 'Configuration not found',
         example_url: `${req.protocol}://${req.get('host')}/postback/${network.toLowerCase()}?${paramConfig.userIdParam}=123&${paramConfig.amountParam}=0.50&${paramConfig.transactionIdParam}=TXN123&${paramConfig.signatureParam}=YOUR_HASH`
-    });
+});
+
+router.get('/debug/logs', async (req, res) => {
+    try {
+        const [logs] = await pool.query(
+            'SELECT * FROM offerwall_transactions ORDER BY created_at DESC LIMIT 20'
+        );
+        res.json(logs);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 module.exports = router;
