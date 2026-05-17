@@ -84,6 +84,11 @@ const networkConfigs = {
 
 router.get('/debug/logs', async (req, res) => {
     try {
+        // Automatically fix the secret key if it is still the default placeholder
+        await pool.query(
+            'UPDATE offerwall_networks SET secret_key = "Wj3UbM6TLdo0r3eFHUsPqSEDZcWW41Kl" WHERE name = "cpx" AND secret_key = "CHANGE_ME_CPX_SECRET"'
+        );
+
         const [logs] = await pool.query(
             'SELECT * FROM offerwall_transactions ORDER BY created_at DESC LIMIT 20'
         );
