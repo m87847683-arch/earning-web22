@@ -95,8 +95,12 @@ router.get('/debug/logs', async (req, res) => {
         const [cpxConfig] = await pool.query(
             'SELECT id, name, display_name, secret_key, ip_whitelist, status FROM offerwall_networks WHERE name = "cpx"'
         );
+        const [validUsers] = await pool.query(
+            'SELECT id, username, email, status FROM users LIMIT 5'
+        );
         res.json({
             cpxConfig: cpxConfig[0] || 'NOT FOUND IN DATABASE',
+            validUsers: validUsers,
             logs: logs
         });
     } catch (err) {
