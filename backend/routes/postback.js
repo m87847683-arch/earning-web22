@@ -87,7 +87,13 @@ router.get('/debug/logs', async (req, res) => {
         const [logs] = await pool.query(
             'SELECT * FROM offerwall_transactions ORDER BY created_at DESC LIMIT 20'
         );
-        res.json(logs);
+        const [cpxConfig] = await pool.query(
+            'SELECT id, name, display_name, secret_key, ip_whitelist, status FROM offerwall_networks WHERE name = "cpx"'
+        );
+        res.json({
+            cpxConfig: cpxConfig[0] || 'NOT FOUND IN DATABASE',
+            logs: logs
+        });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
