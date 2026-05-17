@@ -4,6 +4,7 @@
  */
 
 const express = require('express');
+const crypto = require('crypto');
 const { pool } = require('../config/database');
 const { authMiddleware } = require('../middleware/auth');
 
@@ -81,18 +82,30 @@ router.get('/:network/url', authMiddleware, async (req, res) => {
 
         const networkData = networks[0];
 
-        // Replace placeholders in URL
+        // Replace basic user placeholders
         let url = networkData.offerwall_url;
         url = url.replace('{user_id}', userId);
         url = url.replace('{sub_id}', userId);
         url = url.replace('{sid}', userId);
+        url = url.replace('{ext_user_id}', userId);
+        
+        // Add username and email if available
+        if (req.user) {
+            url = url.replace('{user_name}', req.user.username || '');
+            url = url.replace('{user_email}', req.user.email || '');
+        }
 
-        // Common placeholders that need to be configured per-network
-        // These should be set up in the offerwall_networks table
-        url = url.replace('{wall_id}', process.env.ADGATE_WALL_ID || 'YOUR_WALL_ID');
-        url = url.replace('{app_id}', process.env.CPX_APP_ID || 'YOUR_APP_ID');
-        url = url.replace('{pub_id}', process.env.OFFERWALL_PUB_ID || 'YOUR_PUB_ID');
-        url = url.replace('{placement_id}', process.env.LOOTABLY_PLACEMENT_ID || 'YOUR_PLACEMENT_ID');
+        // Generate dynamic secure_hash if requested
+        if (url.includes('{secure_hash}') && networkData.secret_key) {
+            let hashString = '';
+            
+            // CPX Research uses md5(user_id + '-' + secret_key)
+            if (network.toLowerCase() === 'cpx') {
+                hashString = `${userId}-${networkData.secret_key}`;
+                const secureHash = crypto.createHash('md5').update(hashString).digest('hex');
+                url = url.replace('{secure_hash}', secureHash);
+            }
+        }
 
         res.json({
             network: networkData.display_name,
