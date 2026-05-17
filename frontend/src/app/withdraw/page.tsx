@@ -22,6 +22,7 @@ interface WithdrawalInfo {
     referralCount?: number;
     requiredReferrals?: number;
     canWithdraw?: boolean;
+    coinExchangeRate?: number;
     methods: {
         id: string;
         name: string;
