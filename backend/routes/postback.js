@@ -337,7 +337,7 @@ router.get('/test/:network', async (req, res) => {
             offer_name: paramConfig.offerNameParam,
             signature: paramConfig.signatureParam
         } : 'Configuration not found',
-        example_url: `${req.protocol}://${req.get('host')}/postback/${network.toLowerCase()}?${paramConfig.userIdParam}=123&${paramConfig.amountParam}=0.50&${paramConfig.transactionIdParam}=TXN123&${paramConfig.signatureParam}=YOUR_HASH`
+    });
 });
 
 module.exports = router;
