@@ -45,7 +45,8 @@ async function migrate() {
             ['cooldown_hours', '12'],
             ['min_withdrawal', '5'],
             ['referral_commission', '10'],
-            ['vip_unlimited', 'true']
+            ['vip_unlimited', 'true'],
+            ['coin_exchange_rate', '1000']
         ];
 
         for (const [key, value] of defaults) {

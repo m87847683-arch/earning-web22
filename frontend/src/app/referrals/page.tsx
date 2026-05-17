@@ -171,14 +171,14 @@ export default function ReferralsPage() {
                         <div className="p-2 mx-auto w-fit rounded-xl bg-amber-500/10 mb-2">
                             <DollarSign size={20} className="text-amber-500" />
                         </div>
-                        <div className="text-2xl font-bold">${(stats?.totalCommission ?? stats?.totalEarned ?? 0).toFixed(2)}</div>
+                        <div className="text-2xl font-bold">{(stats?.totalCommission ?? stats?.totalEarned ?? 0).toFixed(2)} Coins</div>
                         <div className="text-xs text-[var(--muted)]">Total Earned</div>
                     </div>
                     <div className="card text-center">
                         <div className="p-2 mx-auto w-fit rounded-xl bg-blue-500/10 mb-2">
                             <DollarSign size={20} className="text-blue-500" />
                         </div>
-                        <div className="text-2xl font-bold">${(stats?.monthlyCommission ?? stats?.pendingEarnings ?? 0).toFixed(2)}</div>
+                        <div className="text-2xl font-bold">{(stats?.monthlyCommission ?? stats?.pendingEarnings ?? 0).toFixed(2)} Coins</div>
                         <div className="text-xs text-[var(--muted)]">This Month</div>
                     </div>
                 </div>
@@ -240,7 +240,7 @@ export default function ReferralsPage() {
                                     </div>
                                     <div className="text-right">
                                         <div className="font-bold text-[var(--success)]">
-                                            ${referral.commissionEarned.toFixed(2)}
+                                            {referral.commissionEarned.toFixed(2)} Coins
                                         </div>
                                         <div className={`text-xs ${referral.isActive ? 'text-green-500' : 'text-[var(--muted)]'}`}>
                                             {referral.isActive ? 'Active' : 'Inactive'}

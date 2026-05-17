@@ -30,7 +30,7 @@ export default function BalanceCard({
     const displayTitle = label || title || '';
 
     // Use value (string) or format amount (number)
-    const displayValue = value || (amount !== undefined ? `$${amount.toFixed(2)}` : '$0.00');
+    const displayValue = value || (amount !== undefined ? `${amount.toFixed(2)} Coins` : '0.00 Coins');
 
     // Use trend or subtitle
     const displaySubtitle = trend || subtitle;

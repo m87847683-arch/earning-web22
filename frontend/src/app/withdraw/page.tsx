@@ -264,14 +264,15 @@ export default function WithdrawPage() {
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-white/70 text-sm">Available Balance</p>
-                            <p className="text-3xl font-bold">${info?.balance.toFixed(2)}</p>
+                            <p className="text-3xl font-bold">{info?.balance.toFixed(0)} Coins</p>
+                            <p className="text-sm font-medium text-white/80 mt-1">≈ ${( (info?.balance || 0) / (info?.coinExchangeRate || 1000) ).toFixed(2)}</p>
                         </div>
                         <Wallet size={40} className="text-white/30" />
                     </div>
                     <div className="flex gap-4 mt-3 text-sm">
                         <div>
                             <span className="text-white/70">Min:</span>
-                            <span className="ml-1 font-medium">${info?.minWithdrawal}</span>
+                            <span className="ml-1 font-medium">{info?.minWithdrawal} Coins</span>
                         </div>
                         <div>
                             <span className="text-white/70">Fee:</span>
@@ -285,9 +286,9 @@ export default function WithdrawPage() {
 
                 {/* Amount Input */}
                 <div>
-                    <label className="block text-sm font-medium mb-2">Amount (USD)</label>
+                    <label className="block text-sm font-medium mb-2">Amount (Coins)</label>
                     <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted)] text-lg pointer-events-none z-10">$</span>
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted)] text-lg pointer-events-none z-10">🪙</span>
                         <input
                             type="number"
                             value={amount}
@@ -301,22 +302,28 @@ export default function WithdrawPage() {
                     </div>
 
                     {calculatedFee && (
-                        <div className="flex justify-between mt-2 text-sm">
-                            <span className="text-[var(--muted)]">Fee: ${calculatedFee.fee.toFixed(2)}</span>
-                            <span className="font-medium">You'll receive: ${calculatedFee.netAmount.toFixed(2)}</span>
+                        <div className="flex flex-col mt-2 text-sm space-y-1">
+                            <div className="flex justify-between">
+                                <span className="text-[var(--muted)]">Fee: {calculatedFee.fee.toFixed(0)} Coins</span>
+                                <span className="font-medium">You'll receive: {calculatedFee.netAmount.toFixed(0)} Coins</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span></span>
+                                <span className="font-medium text-[var(--success)]">≈ ${(calculatedFee.netAmount / (info?.coinExchangeRate || 1000)).toFixed(2)}</span>
+                            </div>
                         </div>
                     )}
 
                     {/* Quick amount buttons */}
                     <div className="flex gap-2 mt-3">
-                        {[10, 25, 50, 100].map((val) => (
+                        {[100, 500, 1000, 5000].map((val) => (
                             <button
                                 key={val}
                                 onClick={() => setAmount(String(Math.min(val, info?.balance || val)))}
                                 className="flex-1 py-2 text-sm font-medium rounded-lg bg-[var(--card-bg)] border border-[var(--card-border)] hover:border-[var(--primary)]"
                                 disabled={(info?.balance || 0) < val}
                             >
-                                ${val}
+                                {val} Coins
                             </button>
                         ))}
                     </div>
@@ -442,7 +449,7 @@ export default function WithdrawPage() {
                                             <MethodIcon size={20} className="text-[var(--muted)]" />
                                         </div>
                                         <div className="flex-1">
-                                            <div className="font-medium">${withdrawal.netAmount.toFixed(2)}</div>
+                                            <div className="font-medium">{withdrawal.netAmount.toFixed(0)} Coins</div>
                                             <div className="text-xs text-[var(--muted)]">
                                                 {new Date(withdrawal.createdAt).toLocaleDateString()}
                                             </div>

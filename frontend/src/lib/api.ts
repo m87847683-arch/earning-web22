@@ -166,7 +166,7 @@ class ApiClient {
 
     // Withdrawal endpoints
     async getWithdrawalInfo(token: string) {
-        return this.request<{ balance: number; minWithdrawal: number; maxWithdrawal: number; feePercent: number; methods: any[] }>('/withdrawals/info', { token });
+        return this.request<{ balance: number; minWithdrawal: number; maxWithdrawal: number; feePercent: number; methods: any[]; coinExchangeRate: number }>('/withdrawals/info', { token });
     }
 
     async calculateWithdrawalFee(token: string, amount: number) {

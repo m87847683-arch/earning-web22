@@ -15,6 +15,7 @@ interface SiteSettings {
     minWithdrawal: number;
     referralCommission: number;
     vipUnlimited: boolean;
+    coinExchangeRate?: number;
     withdrawalMethods?: {
         id: string;
         name: string;
@@ -41,6 +42,7 @@ export default function AdminSettingsPage() {
         minWithdrawal: 5,
         referralCommission: 10,
         vipUnlimited: true,
+        coinExchangeRate: 1000,
         withdrawalMethods: [
             { id: 'jazzcash', name: 'JazzCash', minAmount: 1, feePercent: 0 },
             { id: 'easypaisa', name: 'Easypaisa', minAmount: 1, feePercent: 0 },
@@ -251,6 +253,17 @@ export default function AdminSettingsPage() {
                                     min="0"
                                     max="100"
                                 />
+                            </div>
+                            <div className="col-span-2">
+                                <label className="text-sm text-[var(--muted)] mb-1 block">Coin Exchange Rate (Coins = $1.00)</label>
+                                <input
+                                    type="number"
+                                    value={settings.coinExchangeRate || 1000}
+                                    onChange={(e) => setSettings({ ...settings, coinExchangeRate: parseFloat(e.target.value) })}
+                                    className="input"
+                                    min="1"
+                                />
+                                <p className="text-xs text-[var(--muted)] mt-1">E.g. 1000 means 1000 Coins equals $1.00.</p>
                             </div>
                         </div>
 

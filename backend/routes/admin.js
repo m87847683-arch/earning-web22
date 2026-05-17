@@ -782,7 +782,8 @@ router.get('/settings', adminAuth, async (req, res) => {
                 { id: 'easypaisa', name: 'Easypaisa', minAmount: 1, feePercent: 0 },
                 { id: 'usdt_trc20', name: 'USDT (TRC20)', minAmount: 5, feePercent: 2 },
                 { id: 'binance_pay', name: 'Binance Pay', minAmount: 2, feePercent: 0 }
-            ]
+            ],
+            coinExchangeRate: 1000
         };
 
         settings.forEach(s => {
@@ -793,6 +794,7 @@ router.get('/settings', adminAuth, async (req, res) => {
             if (s.setting_key === 'referral_commission_rate') settingsObj.referralCommission = parseFloat(s.setting_value);
             if (s.setting_key === 'vip_unlimited') settingsObj.vipUnlimited = s.setting_value === 'true';
             if (s.setting_key === 'withdrawal_methods') settingsObj.withdrawalMethods = JSON.parse(s.setting_value);
+            if (s.setting_key === 'coin_exchange_rate') settingsObj.coinExchangeRate = parseFloat(s.setting_value);
         });
 
         res.json(settingsObj);
@@ -805,7 +807,7 @@ router.get('/settings', adminAuth, async (req, res) => {
 // Update site settings
 router.put('/settings', adminAuth, async (req, res) => {
     try {
-        const { dailyTaskLimit, dailyOfferLimit, cooldownHours, minWithdrawal, referralCommission, vipUnlimited, withdrawalMethods } = req.body;
+        const { dailyTaskLimit, dailyOfferLimit, cooldownHours, minWithdrawal, referralCommission, vipUnlimited, withdrawalMethods, coinExchangeRate } = req.body;
 
         const settingsToUpdate = [
             ['daily_task_limit', (dailyTaskLimit ?? 6).toString()],
@@ -814,6 +816,7 @@ router.put('/settings', adminAuth, async (req, res) => {
             ['min_withdrawal_standard', (minWithdrawal ?? 5).toString()],
             ['referral_commission_rate', (referralCommission ?? 10).toString()],
             ['vip_unlimited', String(vipUnlimited ?? true)],
+            ['coin_exchange_rate', (coinExchangeRate ?? 1000).toString()],
         ];
 
         if (withdrawalMethods) {

@@ -545,14 +545,14 @@ function Dashboard() {
               <BalanceCard
                 icon={Wallet}
                 label="Balance"
-                value={`$${(dashboard?.balance ?? 0).toFixed(2)}`}
-                trend={dashboard?.todayEarned ? `+$${dashboard.todayEarned.toFixed(2)} today` : undefined}
+                value={`${(dashboard?.balance ?? 0).toFixed(2)} Coins`}
+                trend={dashboard?.todayEarned ? `+${dashboard.todayEarned.toFixed(2)} Coins today` : undefined}
                 color="primary"
               />
               <BalanceCard
                 icon={TrendingUp}
                 label="Total Earned"
-                value={`$${(dashboard?.totalEarned ?? 0).toFixed(2)}`}
+                value={`${(dashboard?.totalEarned ?? 0).toFixed(2)} Coins`}
                 color="success"
               />
             </div>
@@ -597,7 +597,7 @@ function Dashboard() {
               </div>
             </div>
             <span className="text-sm font-semibold text-[var(--primary)]">
-              ${dashboard?.todayEarned?.toFixed(2) || '0.00'}
+              {dashboard?.todayEarned?.toFixed(2) || '0.00'} Coins
             </span>
           </div>
         </section>

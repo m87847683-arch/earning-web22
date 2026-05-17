@@ -178,7 +178,7 @@ export default function EarnPage() {
             const result = await api.completeTask(token!, taskId.toString(), answer, verificationToken);
 
             showToast(
-                `${result.isVIP ? '👑 ' : ''}You earned $${result.reward.toFixed(2)}!${result.bonus > 0 ? ` (+$${result.bonus.toFixed(2)} VIP bonus)` : ''}`,
+                `${result.isVIP ? '👑 ' : ''}You earned ${result.reward.toFixed(2)} Coins!${result.bonus > 0 ? ` (+${result.bonus.toFixed(2)} Coins VIP bonus)` : ''}`,
                 'success'
             );
 
@@ -210,7 +210,7 @@ export default function EarnPage() {
                     </div>
                     <div className="text-right">
                         <div className="text-xs text-[var(--muted)]">Balance</div>
-                        <div className="font-bold text-[var(--success)]">${user?.balance.toFixed(2) || '0.00'}</div>
+                        <div className="font-bold text-[var(--success)]">{user?.balance.toFixed(2) || '0.00'} Coins</div>
                     </div>
                 </div>
 

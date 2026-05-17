@@ -186,7 +186,7 @@ export default function TaskCard({
 
                 <div className="text-right flex flex-col items-end">
                     <div className="font-bold text-[var(--success)]">
-                        ${isVIP ? bonusReward.toFixed(2) : reward.toFixed(2)}
+                        {isVIP ? bonusReward.toFixed(2) : reward.toFixed(2)} Coins
                     </div>
 
                     {isLocked && timeRemaining ? (

@@ -44,6 +44,10 @@ router.get('/info', authMiddleware, async (req, res) => {
         // Get dynamic withdrawal methods
         const dynamicMethods = await getDynamicMethods();
 
+        // Get coin exchange rate
+        const [settingsRate] = await pool.query('SELECT setting_value FROM site_settings WHERE setting_key = "coin_exchange_rate"');
+        const coinExchangeRate = settingsRate.length > 0 ? parseFloat(settingsRate[0].setting_value) : 1000;
+
         const baseMethods = [
             { id: 'jazzcash', name: 'JazzCash', icon: 'phone', fields: ['accountNumber'] },
             { id: 'easypaisa', name: 'Easypaisa', icon: 'phone', fields: ['accountNumber'] },
@@ -70,7 +74,8 @@ router.get('/info', authMiddleware, async (req, res) => {
             referralCount: referrals,
             requiredReferrals,
             canWithdraw,
-            paymentMethods
+            paymentMethods,
+            coinExchangeRate
         });
 
     } catch (error) {

@@ -149,7 +149,7 @@ export default function OfferwallsPage() {
                     <div className="grid grid-cols-2 gap-3">
                         <div className="card text-center">
                             <DollarSign className="mx-auto mb-1 text-green-500" size={24} />
-                            <p className="text-2xl font-bold">${summary.totalEarned.toFixed(2)}</p>
+                            <p className="text-2xl font-bold">{summary.totalEarned.toFixed(2)} Coins</p>
                             <p className="text-xs text-[var(--muted)]">Total Earned</p>
                         </div>
                         <div className="card text-center">
@@ -223,7 +223,7 @@ export default function OfferwallsPage() {
 
                                             {wall.userStats.completions > 0 && (
                                                 <p className="text-xs text-green-500 mt-1">
-                                                    ✓ {wall.userStats.completions} completed • ${wall.userStats.totalEarned.toFixed(2)} earned
+                                                    ✓ {wall.userStats.completions} completed • {wall.userStats.totalEarned.toFixed(2)} Coins earned
                                                 </p>
                                             )}
                                         </div>
@@ -276,7 +276,7 @@ export default function OfferwallsPage() {
                                         </div>
 
                                         <div className="text-right">
-                                            <p className="font-semibold text-green-500">+${tx.amount.toFixed(2)}</p>
+                                            <p className="font-semibold text-green-500">+{tx.amount.toFixed(2)} Coins</p>
                                             <span className={`text-xs px-2 py-0.5 rounded-full ${getStatusColor(tx.status)}`}>
                                                 {tx.status}
                                             </span>
