@@ -81,6 +81,19 @@ export default function AdminOfferwallsPage() {
     const [activeTab, setActiveTab] = useState<'networks' | 'transactions' | 'analytics'>('networks');
     const [editingNetwork, setEditingNetwork] = useState<OfferwallNetwork | null>(null);
     const [transactionFilter, setTransactionFilter] = useState('');
+    const [isAdding, setIsAdding] = useState(false);
+    const [newNetwork, setNewNetwork] = useState({
+        name: '',
+        displayName: '',
+        description: '',
+        logoUrl: '',
+        secretKey: '',
+        payoutPercent: 70,
+        hashMethod: 'md5',
+        ipWhitelist: '',
+        offerwallUrl: '',
+        status: 'active'
+    });
 
     useEffect(() => {
         const token = localStorage.getItem('adminToken');
@@ -138,7 +151,10 @@ export default function AdminOfferwallsPage() {
                         payoutPercent: network.payoutPercent,
                         status: network.status,
                         ipWhitelist: network.ipWhitelist,
-                        offerwallUrl: network.offerwallUrl
+                        offerwallUrl: network.offerwallUrl,
+                        secretKey: network.secretKey,
+                        logoUrl: network.logoUrl,
+                        hashMethod: network.hashMethod
                     })
                 }
             );
@@ -150,6 +166,53 @@ export default function AdminOfferwallsPage() {
             loadData(token);
         } catch (error) {
             showToast('Failed to update network', 'error');
+        }
+    };
+    
+    const createNetwork = async () => {
+        const token = localStorage.getItem('adminToken');
+        if (!token) return;
+
+        if (!newNetwork.name || !newNetwork.displayName || !newNetwork.secretKey) {
+            showToast('Name, Display Name, and Secret Key are required', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/admin/offerwalls`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify(newNetwork)
+                }
+            );
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to create');
+            }
+
+            showToast('Network created successfully', 'success');
+            setIsAdding(false);
+            setNewNetwork({
+                name: '',
+                displayName: '',
+                description: '',
+                logoUrl: '',
+                secretKey: '',
+                payoutPercent: 70,
+                hashMethod: 'md5',
+                ipWhitelist: '',
+                offerwallUrl: '',
+                status: 'active'
+            });
+            loadData(token);
+        } catch (error: any) {
+            showToast(error.message || 'Failed to create network', 'error');
         }
     };
 
@@ -176,11 +239,17 @@ export default function AdminOfferwallsPage() {
     return (
         <div className="pb-8">
             {/* Header */}
-            <div className="sticky top-0 z-10 bg-[var(--bg-primary)] border-b border-[var(--card-border)] px-4 py-3">
+            <div className="sticky top-0 z-10 bg-[var(--bg-primary)] border-b border-[var(--card-border)] px-4 py-3 flex justify-between items-center">
                 <div className="flex items-center gap-3">
                     <Gift className="text-purple-500" size={24} />
                     <h1 className="text-lg font-bold">Offerwall Management</h1>
                 </div>
+                <button
+                    onClick={() => setIsAdding(!isAdding)}
+                    className="flex items-center gap-1 text-xs py-2 px-3 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors"
+                >
+                    <Plus size={14} /> Add Network
+                </button>
             </div>
 
             {/* Stats Cards */}
@@ -248,6 +317,143 @@ export default function AdminOfferwallsPage() {
             <div className="px-4 space-y-3">
                 {activeTab === 'networks' && (
                     <>
+                        {isAdding && (
+                            <div className="card border-purple-500/30 bg-purple-500/5 space-y-3">
+                                <div className="flex justify-between items-center border-b border-[var(--card-border)] pb-2">
+                                    <h3 className="font-semibold text-purple-400">Add New Offerwall Network</h3>
+                                    <button 
+                                        onClick={() => setIsAdding(false)}
+                                        className="text-[var(--muted)] hover:text-white"
+                                    >
+                                        <X size={18} />
+                                    </button>
+                                </div>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="text-xs text-[var(--muted)]">Unique Name Key (e.g. cpx, offertoro)</label>
+                                        <input
+                                            type="text"
+                                            value={newNetwork.name}
+                                            onChange={(e) => setNewNetwork({...newNetwork, name: e.target.value})}
+                                            className="input w-full mt-1"
+                                            placeholder="cpx"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-[var(--muted)]">Display Name</label>
+                                        <input
+                                            type="text"
+                                            value={newNetwork.displayName}
+                                            onChange={(e) => setNewNetwork({...newNetwork, displayName: e.target.value})}
+                                            className="input w-full mt-1"
+                                            placeholder="CPX Research"
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="text-xs text-[var(--muted)]">Description</label>
+                                    <input
+                                        type="text"
+                                        value={newNetwork.description}
+                                        onChange={(e) => setNewNetwork({...newNetwork, description: e.target.value})}
+                                        className="input w-full mt-1"
+                                        placeholder="Complete paid surveys and market research"
+                                    />
+                                </div>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="text-xs text-[var(--muted)]">Secret Key / Hash Salt</label>
+                                        <input
+                                            type="text"
+                                            value={newNetwork.secretKey}
+                                            onChange={(e) => setNewNetwork({...newNetwork, secretKey: e.target.value})}
+                                            className="input w-full mt-1"
+                                            placeholder="Wj3UbM6TLdo0r3eFHUs..."
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-[var(--muted)]">Payout Percent (%)</label>
+                                        <input
+                                            type="number"
+                                            value={newNetwork.payoutPercent}
+                                            onChange={(e) => setNewNetwork({...newNetwork, payoutPercent: parseFloat(e.target.value) || 70})}
+                                            className="input w-full mt-1"
+                                            placeholder="70"
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="text-xs text-[var(--muted)]">Offerwall Embed/Iframe URL</label>
+                                    <input
+                                        type="text"
+                                        value={newNetwork.offerwallUrl}
+                                        onChange={(e) => setNewNetwork({...newNetwork, offerwallUrl: e.target.value})}
+                                        className="input w-full mt-1"
+                                        placeholder="https://offers.cpx-research.com/index.php?app_id=...&ext_user_id={ext_user_id}&secure_hash={secure_hash}"
+                                    />
+                                </div>
+                                <div className="grid grid-cols-3 gap-3">
+                                    <div>
+                                        <label className="text-xs text-[var(--muted)]">Logo Icon (Emoji or URL)</label>
+                                        <input
+                                            type="text"
+                                            value={newNetwork.logoUrl}
+                                            onChange={(e) => setNewNetwork({...newNetwork, logoUrl: e.target.value})}
+                                            className="input w-full mt-1"
+                                            placeholder="📊"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-[var(--muted)]">Hash Method</label>
+                                        <select
+                                            value={newNetwork.hashMethod}
+                                            onChange={(e) => setNewNetwork({...newNetwork, hashMethod: e.target.value})}
+                                            className="input w-full mt-1"
+                                        >
+                                            <option value="md5">MD5</option>
+                                            <option value="sha256">SHA256</option>
+                                            <option value="none">None</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs text-[var(--muted)]">Status</label>
+                                        <select
+                                            value={newNetwork.status}
+                                            onChange={(e) => setNewNetwork({...newNetwork, status: e.target.value})}
+                                            className="input w-full mt-1"
+                                        >
+                                            <option value="active">Active</option>
+                                            <option value="testing">Testing</option>
+                                            <option value="inactive">Inactive</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="text-xs text-[var(--muted)]">IP Whitelist (comma-separated, optional)</label>
+                                    <input
+                                        type="text"
+                                        value={newNetwork.ipWhitelist}
+                                        onChange={(e) => setNewNetwork({...newNetwork, ipWhitelist: e.target.value})}
+                                        className="input w-full mt-1"
+                                        placeholder="Leave empty unless required"
+                                    />
+                                </div>
+                                <div className="flex gap-2 justify-end pt-2">
+                                    <button
+                                        onClick={() => setIsAdding(false)}
+                                        className="py-2 px-4 rounded-lg bg-[var(--card-border)] hover:bg-[var(--card-bg)] text-sm font-medium transition-colors"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={createNetwork}
+                                        className="py-2 px-4 rounded-lg bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium transition-colors"
+                                    >
+                                        Save Network
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                         {networks.map((network) => (
                             <div key={network.id} className="card">
                                 {editingNetwork?.id === network.id ? (
@@ -269,7 +475,6 @@ export default function AdminOfferwallsPage() {
                                                 </button>
                                             </div>
                                         </div>
-
                                         <div className="grid grid-cols-2 gap-3">
                                             <div>
                                                 <label className="text-xs text-[var(--muted)]">Payout %</label>
@@ -298,6 +503,46 @@ export default function AdminOfferwallsPage() {
                                                     <option value="testing">Testing</option>
                                                 </select>
                                             </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label className="text-xs text-[var(--muted)]">Secret Key / Salt</label>
+                                                <input
+                                                    type="text"
+                                                    value={editingNetwork.secretKey || ''}
+                                                    onChange={(e) => setEditingNetwork({
+                                                        ...editingNetwork,
+                                                        secretKey: e.target.value
+                                                    })}
+                                                    className="input w-full mt-1"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="text-xs text-[var(--muted)]">Logo / Icon</label>
+                                                <input
+                                                    type="text"
+                                                    value={editingNetwork.logoUrl || ''}
+                                                    onChange={(e) => setEditingNetwork({
+                                                        ...editingNetwork,
+                                                        logoUrl: e.target.value
+                                                    })}
+                                                    className="input w-full mt-1"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="text-xs text-[var(--muted)]">Offerwall Embed URL</label>
+                                            <input
+                                                type="text"
+                                                value={editingNetwork.offerwallUrl || ''}
+                                                onChange={(e) => setEditingNetwork({
+                                                    ...editingNetwork,
+                                                    offerwallUrl: e.target.value
+                                                })}
+                                                className="input w-full mt-1"
+                                            />
                                         </div>
 
                                         <div>
