@@ -35,9 +35,9 @@ const networkConfigs = {
         offerIdParam: 'offer_id',
         offerNameParam: 'offer_name',
         signatureParam: 'hash',
-        // CPX: hash = md5(trans_id + user_id + amount_usd + secret)
+        // CPX: hash = md5(trans_id + '-' + secret)
         generateSignature: (params, secret) => {
-            const data = `${params.trans_id}${params.user_id}${params.amount_usd}${secret}`;
+            const data = `${params.trans_id}-${secret}`;
             return crypto.createHash('md5').update(data).digest('hex');
         }
     },
@@ -175,11 +175,19 @@ router.get('/:network', async (req, res) => {
 
         // 8. Calculate credited amount (apply payout percentage)
         const payoutPercent = parseFloat(networkConfig.payout_percent) / 100;
-        const creditedAmount = parseFloat((amount * payoutPercent).toFixed(4));
-        const adminProfit = parseFloat((amount - creditedAmount).toFixed(4));
         
-        const isChargeback = amount < 0;
+        const isChargeback = amount < 0 || req.query.status === '2';
         const txStatus = isChargeback ? 'rejected' : 'credited';
+        
+        // Force calculations to handle correct negative values on cancellation
+        const absoluteAmount = Math.abs(amount);
+        let creditedAmount = parseFloat((absoluteAmount * payoutPercent).toFixed(4));
+        let adminProfit = parseFloat((absoluteAmount - creditedAmount).toFixed(4));
+        
+        if (isChargeback) {
+            creditedAmount = -Math.abs(creditedAmount);
+            adminProfit = -Math.abs(adminProfit);
+        }
 
         // 9. Start transaction
         const connection = await pool.getConnection();
